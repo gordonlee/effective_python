@@ -31,12 +31,12 @@ print(percentages)
 
 
 # 파일 안에 있는 데이터를 읽어서 파싱하기
-print('## 파일 안에 있는 데이터를 읽어서 파싱하기')
 def read_visits(data_path):
     with open(data_path) as f:
         for line in f:
             yield int(line)
 
+print('## 파일 안에 있는 데이터를 읽어서 파싱하기')
 it = read_visits('./_data/visits_numbers.txt')
 # 책엔 아래 처럼 나와있는데, it 은 generator 이므로 값을 가져올 수 없음
 # percentages = normalize(list(it))  # 이렇게 하면 메모리에 다 올려서 처리 가능
@@ -87,5 +87,33 @@ percentages = normalize_func(lambda: read_visits(path))
 print(percentages)
 """
 sum() 와 for value in iter() 가 제대로 동작하는 이유는
-내부적으로 __iter__ 가 구현되어 있으면, 루프
+내부적으로 __iter__ 가 구현되어 있으면, 루프에서 사용할 수 있다.
 """
+
+
+# 클래스를 이용한 이터레이션
+class ReadVisits(object):
+    def __init__(self, data_path):
+        self.data_path = data_path
+
+    def __iter__(self):
+        with open(self.data_path) as f:
+            for line in f:
+                yield int(line)
+
+print('## 클래스를 이용한 이터레이션')
+visits = ReadVisits(path)
+percentages = normalize(visits)  # for value in __iter__ 로 호출됨
+print(percentages)
+
+
+# 파라미터가 단순한 이터레이터가 아님을 보장하는 함수
+def normalize_defensive(numbers):
+    if iter(numbers) is iter(numbers):  # 이터레이터 -- 거부
+        raise TypeError('Must supply a container')
+    total = sum(numbers)
+    result = []
+    for value in numbers:
+        percent = 100 * value / total
+        result.append(percent)
+    return result
