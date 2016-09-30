@@ -2,6 +2,15 @@
 
 17. 인수를 순회할 때는 방어적으로 하자.
 
+- 입력 인수를 여러 번 순회하는 함수를 작성할 때 주의하자.
+  입력 인수가 이터레이터라면 이상하게 동작해서 값을 잃어버릴 수 있다.
+- 파이썬의 이터레이터 프로토콜은 컨테이너와 이터레이터가 내장 함수 iter, next 와
+  for 루프 및 관련 표현식과 상호 작용하는 방법을 정의한다.
+- __iter__ 메서드를 제너레이터로 구현하면 자신만의 이터러블 컨테이너 타입을
+  쉽게 정의할 수 있다.
+- 어떤 값에 iter 를 두 번 호출했을 때 같은 결과가 나오고 내장 함수 next 로 전진
+  시킬 수 있다면 그 값은 컨테이너가 아닌 이터레이터다.
+
 """
 
 
@@ -117,3 +126,61 @@ def normalize_defensive(numbers):
         percent = 100 * value / total
         result.append(percent)
     return result
+
+visits = [15, 35, 80]
+normalize_defensive(visits)  # No Error
+print('{0} type, {1}'.format(type(visits), visits))
+visits = ReadVisits(path)
+normalize_defensive(visits)  # No Error
+print('{0} type, {1}'.format(type(visits), visits))
+
+it = iter(visits)
+print('{0} type, {1}'.format(type(it), it))
+# normalize_defensive(it)  # Exception occurs
+"""
+it을 넣는 경우는 익셉션이다. 왜냐하면 parameter 로 iterator 가 넘어오면,
+iter(iterator) == iter(iterator) 이 가정이 성립하기 때문에다.
+만약 list 나 클래스 중 __iter__ 가 구현되어 있는 오브젝트의 경우는
+iter() 를 호출했을 때, 다음 포인터로 진행시키기 때문에 값이 같아질 수 없다.
+"""
+
+
+# iterator 인스턴스와 iter 함수에 대한 이해
+print('iterator 인스턴스와 iter 함수에 대한 이해')
+
+"""
+타입은 모두 list_iterator 이지만, 5번부터 iter() 함수안에 파라메터를
+list 대신 iterator 를 넣었다. 이 경우 4, 5, 6이 모두 동일한 주소값을
+갖는 동일 포인터가 출력되었다.
+이와 같은 원리를 이용해서 normalize_defensive() 함수의 익셉션 발생 조건을
+이해할 수 있다.
+"""
+list_instance = [1, 2, 3, 4, 5, 6]
+
+it = iter(list_instance)
+# 1) <class 'list_iterator'> type, <list_iterator object at 0x02315490>
+print('{0} type, {1}'.format(type(it), it))
+
+it = iter(list_instance)
+# 2) <class 'list_iterator'> type, <list_iterator object at 0x023154D0>
+print('{0} type, {1}'.format(type(it), it))
+
+it = iter(list_instance)
+# 3) <class 'list_iterator'> type, <list_iterator object at 0x02315430>
+print('{0} type, {1}'.format(type(it), it))
+
+it = iter(list_instance)
+# 4) <class 'list_iterator'> type, <list_iterator object at 0x02315490>
+print('{0} type, {1}'.format(type(it), it))
+
+it = iter(it)
+# 5) <class 'list_iterator'> type, <list_iterator object at 0x02315490>
+print('{0} type, {1}'.format(type(it), it))
+
+it = iter(it)
+# 6) <class 'list_iterator'> type, <list_iterator object at 0x02315490>
+print('{0} type, {1}'.format(type(it), it))
+
+
+# iterator vs generator
+# ref: http://anandology.com/python-practice-book/iterators.html
