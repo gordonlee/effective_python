@@ -63,7 +63,8 @@ def create_workers(input_list):
 
 
 def execute(workers):
-    threads = [Thread(target=w.map) for w in workers]  # MEMO: Thread header? from threading import Thread
+    # MEMO: Thread header? from threading import Thread
+    threads = [Thread(target=w.map) for w in workers]
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -94,7 +95,9 @@ class GenericInputData(object):
         raise NotImplementedError
 
     @classmethod
-    def generate_inputs(cls, config):  # FIXME: what is cls ?
+    # MEMO: what is cls?
+    # class 의 줄임말. 실제 인스턴스가 없는 클래스 타입이 들어감.
+    def generate_inputs(cls, config):
         raise NotImplementedError
 
 
@@ -146,4 +149,32 @@ with tempfile.TemporaryDirectory() as tmpdir:
 타입 자체를 호출부에서 넘기게 되므로, 따로 함수 안을 고칠 필요가 없다.
 다만, map_reduce() 에 넘어가는 argument 의 타입 체크를 걸어주는 편이 좋겠다.
 """
-# FIXME: classmethod 의 정의를 먼저 알아보기 ( 정말 static member function 인가? )
+# MEMO: classmethod 의 정의를 먼저 알아보기 ( 정말 static member function 인가? )
+
+print('------------ about class method ------------')
+class Parent(object):
+    def __init__(self):
+        print('parent.__init__')
+
+    def work(self):
+        print('parent.work')
+
+    @classmethod
+    def work_cls(cls):
+        print('work_cls! {}'.format(cls))
+
+
+class Child(Parent):
+    def __init__(self):
+        print('child.__init__')
+
+    def work(self):
+        print('child.work')
+
+child_obj = Child()
+child_obj.work()
+child_obj.work_cls()
+
+Parent.work_cls()  # work fine
+# Parent.work()  # Error! not found instance
+child_obj.work_cls()
