@@ -9,6 +9,7 @@ InputData.read 에 사용한 인스턴스 메서드 다형성과 똑같다.
 """
 import os
 import tempfile
+from threading import Thread
 
 
 # 객체의 상속 예제 ( InputData <- PathInputData )
@@ -62,7 +63,7 @@ def create_workers(input_list):
 
 
 def execute(workers):
-    threads = [Thread(target=w.map) for w in workers]  # FIXME: Thread header?
+    threads = [Thread(target=w.map) for w in workers]  # MEMO: Thread header? from threading import Thread
     for thread in threads:
         thread.start()
     for thread in threads:

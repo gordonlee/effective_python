@@ -11,11 +11,6 @@ from collections import defaultdict
 참고: http://forarchitect.tistory.com/54
 """
 
-# 간단한 사용자 sort 예제
-names = ['aaa', 'bbbb', 'cc', 'dddddddddd']
-names.sort(key=lambda x: len(x))
-print(names)
-
 
 # default dict 에 찾을 수 없는 키에 접근할 때마다 호출된 함수를 줄 수 있다.
 def log_missing():
@@ -85,8 +80,7 @@ counter = BetterCountMissing()
 counter()
 assert callable(counter)
 
-counter = BetterCountMissing()
-result = defaultdict(counter, current)
+result = defaultdict(BetterCountMissing(), current)
 
 print('Before: {0}'.format(dict(result)))
 for key, amount in increments:

@@ -77,3 +77,98 @@ math = albert.subject('Math')
 math.report_grade(80, 0.10)
 
 print(albert.average_grade())
+
+
+""" 발표 준비 """
+
+
+class SimpleGradeBook(object):
+    def __init__(self):
+        self._grades = {}
+
+    def add_student(self, name):
+        self._grades[name] = []
+
+    def report_grade(self, name, score):
+        self._grades[name].append(score)
+
+    def average_grade(self, name):
+        grades = self._grades[name]
+        return sum(grades) / len(grades)
+
+book = SimpleGradeBook()
+book.add_student('Isaac Newton')
+book.report_grade('Isaac Newton', 90)
+
+print(book.average_grade('Isaac Newton'))
+
+# SimpleGradeBool <>- 1..1 -- grades: dict
+# grades(name: key, score: array<int>)
+
+# 팀장: "score 과목별로 저장하고 싶은데?"
+# 나 : "아.. 네.. (미리 좀 말해줘요)"
+
+
+class BySubjectGradeBook(object):
+    def __init__(self):
+        self._grades = {}
+
+    def add_student(self, name):
+        self._grades[name] = {}  # 여기 바뀜 [] => {}
+
+    def report_grade(self, name, subject, grade):
+        by_subject = self._grades[name]
+        grade_list = by_subject.setdefault(subject, [])
+        grade_list.append(grade)
+
+    def average_grade(self, name):
+        by_subject = self._grades[name]
+        total, count = 0, 0
+        for grades in by_subject.values():
+            total += sum(grades)
+            count += len(grades)
+        return total / count
+
+book = BySubjectGradeBook()
+book.add_student('Albert')
+book.report_grade('Albert', 'Math', 75)
+book.report_grade('Albert', 'Math', 85)
+book.report_grade('Albert', 'Gym', 30)
+book.report_grade('Albert', 'Gym', 25)
+
+# BySubjectGradeBook <>- 1..1 -- grades: dict
+# grades(name: key, score_by_subject: dict)
+# score_by_subject(subject: key, score: int)
+
+# 나: "대충 테스트해보니 잘 되네. 리뷰 받아야지."
+# 팀장: "아니, 이건 너무 단순한데, 쪽지시험보다 중간/기말고사 점수가 더 중요하게 평가되게 가중치를 줘야겠어"
+# 나: "네... ㅂㄷㅂㄷㅂㄷ"
+
+
+class WeightedGradeBook(object):
+    # ...
+    def report_grade(self, name, subject, score, weight):
+        by_subject = self._grades[name]
+        grade_list = by_subject.setdefault(subject, [])
+        grade_list.append((score, weight))
+
+    def average_grade(self, name):
+        by_subject = self._grades[name]
+        score_sum, score_count = 0, 0
+        for subject, scores in by_subject.items():
+            subject_avg, total_weight = 0, 0
+            for score, weight in scores:
+                # ...
+                subject_avg += score
+                total_weight += weight
+        return 0
+
+# BySubjectGradeBook <>- 1..1 -- grades: dict
+# grades(name: key, score_by_subject: dict)
+# score_by_subject(subject: key, score: tuple(score, weight))
+
+
+"""
+모델링을 할 때는 코드가 얼마나 길어지냐, 클래스가 얼마나 생성되느냐가 중요하지 않다.
+얼마나 읽기 편하냐의 기준은 비단 코드의 길이만 영향을 미치는 것이 아니다. (내생각)
+"""
