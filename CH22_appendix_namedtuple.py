@@ -12,17 +12,24 @@ print(man[0])
 from collections import namedtuple
 
 Animal = namedtuple('Animal', 'name age type')
-
-perry = Animal(name="perry", age=31, type="cat")
-
 # Animal = namedtuple('Animal', 'name age')  # Error!
 # Animal = namedtuple('Animal', 'name age type new_variable')  # Error!
+
+perry3 = Animal("perry", 31, "cat")
+perry = Animal("perry", type=31, age="cat")
+perry = Animal(name="perry", age=31, type="cat")
+perry2 = Animal(name="perry", age="123123", type="cat")
+
+print('------')
+print(perry2)
+print('------')
+print(perry3)
 
 print(perry)
 # Output: Animal(name='perry', age=31, type='cat')
 
-print(perry.name)
-# Output: 'perry'
+print(perry.name)# Output: 'perry'
+
 # perry.name = 'gordonlee'  # Error!
 
 print(perry[0])  # fine
