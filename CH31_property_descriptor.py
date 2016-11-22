@@ -120,3 +120,29 @@ class GradeWithDict(object):
         self._values[instance] = value
 
 # memory leak 은 WeakKeyDictionary() 라는 얘로 처리할 수 있음.
+
+
+class Exam2(object):
+    def __init__(self):
+        self.math_grade = Grade()
+        self.writing_grade = Grade()
+        self.science_grade = Grade()
+
+exam2 = Exam2()
+# Exam2.__dict__['writing_grade']__ 은 클래스 속성에서 있어야 한다.
+# Exam2.__dict__['writing_grade'].__set__(exam2, 40)
+
+class Grade2(object):
+    def __init__(self):
+        print('init')
+        self._value = 0
+
+    def __get__(self, instance, instance_type):
+        print('get')
+        return self._value
+
+    def __set__(self, instance, value):
+        print('set')
+        self._value = value
+
+#FIXME: __get__ / __set__ 이 정확히 언제 불리는지 찾아보자.
